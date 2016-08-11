@@ -1,8 +1,5 @@
-const path = require('path')
-const LOG_PREFIX = `"${path.basename(__filename)}":`
-const log = require('../logger')
-const verbose = log.verbose.bind(log, LOG_PREFIX)
-const info = log.info.bind(log, LOG_PREFIX)
+const verbose = require('debug')('ha:routes:states:verbose')
+const info = require('debug')('ha:routes:states:info')
 
 import {Router} from 'express'
 import _ from 'underscore'

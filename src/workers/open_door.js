@@ -1,9 +1,6 @@
-const path = require('path')
-const LOG_PREFIX = `"${path.basename(__filename)}":`
-const log = require('../logger')
-const verbose = log.verbose.bind(log, LOG_PREFIX)
-const info = log.info.bind(log, LOG_PREFIX)
-const error = log.error.bind(log, LOG_PREFIX)
+const verbose = require('debug')('ha:workers:open_door:verbose')
+const info = require('debug')('ha:workers:open_door:info')
+const error = require('debug')('ha:workers:open_door:error')
 
 import Amqp from 'amqplib-easy'
 import config from '../config'

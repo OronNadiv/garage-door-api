@@ -1,8 +1,5 @@
-const path = require('path')
-const LOG_PREFIX = `"${path.basename(__filename)}":`
-const log = require('../../logger')
-const verbose = log.verbose.bind(log, LOG_PREFIX)
-const error = log.error.bind(log, LOG_PREFIX)
+const verbose = require('debug')('ha:db:models:state:verbose')
+const error = require('debug')('ha:db:models:state:error')
 
 import {createClient} from 'redis'
 import _ from 'underscore'

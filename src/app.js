@@ -1,7 +1,4 @@
-const path = require('path')
-const LOG_PREFIX = `"${path.basename(__filename)}":`
-const log = require('./logger')
-const error = log.error.bind(log, LOG_PREFIX)
+const error = require('debug')('ha:app:error')
 
 import domain from 'domain'
 import diehard from 'diehard'
@@ -17,8 +14,6 @@ const d = domain.create()
 d.on('error', error)
 
 d.run(() => {
-  log.level = process.env.LOG_LEVEL || 'info'
-
   Promise
     .try(States.purge)
     .then(Toggles.purge)
