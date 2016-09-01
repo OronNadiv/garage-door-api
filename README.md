@@ -1,8 +1,9 @@
-# Home Automation - Garage Door Backend API
-This backend server allows you to control the garage door from remote.
-The server receives commands to open or close the garage door.
-If the garage door was left open for a long period of time, it will notify the notifications server that may be followed by phone call, text message, or an email.
-If the garage door has been opened while the alarm is armed, it will notify the alarm system server.
+# Home Automation - Garage Door API
+Back-end server that handles apis for the garage door. Main functions are:
+It saves the garage door state (opened or closed).
+It sends commands to the [raspberry pi garage door client][garage-door-client-url] to open or close the garage door.
+It notifies the users if the garage door is left open.
+It will notify the [alarm server api][alarm-url] when the door is opening or closing if the alarm is armed.
 
 [![JavaScript Style Guide][standard-image]][standard-url]
 [![Dependencies][dependencies-image]][dependencies-url]
@@ -55,6 +56,8 @@ __UI\_URL__ (required): url to the [UI][ui-url] server. Default: if NODE_ENV = `
 [client-installation-instruction-url]: https://oronnadiv.github.io/home-automation/#installation-instructions-for-the-raspberry-pi-clients
 [server-installation-instruction-url]: https://oronnadiv.github.io/home-automation/#installation-instructions-for-the-server-micro-services
 [private-public-keys-url]: https://oronnadiv.github.io/home-automation/#generating-private-and-public-keys
+
+[garage-door-client-url]: https://github.com/OronNadiv/garage-door-raspberry-client
 
 [alarm-url]: https://github.com/OronNadiv/alarm-api
 [auth-url]: https://github.com/OronNadiv/authentication-api
