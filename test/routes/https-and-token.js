@@ -1,6 +1,6 @@
-import config from '../../src/config'
-import UserFixture from '../fixtures/user'
-import Promise from 'bluebird'
+const config = require('../../src/config')
+const Promise = require('bluebird')
+const UserFixture = require('../fixtures/user')
 
 const userFixture = new UserFixture()
 

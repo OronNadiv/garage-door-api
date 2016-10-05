@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   up (knex) {
     return knex.schema.createTable('states', table => {
       table.increments('id').primary()

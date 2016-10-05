@@ -1,6 +1,6 @@
-import {Router} from 'express'
-import Promise from 'bluebird'
-import Toggle from '../db/models/toggle'
+const Promise = require('bluebird')
+const Router = require('express').Router
+const Toggle = require('../db/models/toggle')
 
 const router = new Router()
 
@@ -19,4 +19,4 @@ router.post('/toggles', (req, res, next) => {
     .catch(next)
 })
 
-export default router
+module.exports = router

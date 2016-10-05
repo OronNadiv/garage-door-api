@@ -2,29 +2,29 @@ const verbose = require('debug')('ha:initializations:express:verbose')
 const info = require('debug')('ha:initializations:express:info')
 const error = require('debug')('ha:initializations:express:error')
 
-import authToken from './../middleware/auth_token'
-import bodyParser from 'body-parser'
-import config from './../config'
-import cookieParser from 'cookie-parser'
-import Cors from 'cors'
-import diehard from 'diehard'
-import express from 'express'
-import home from '../routes/home'
-import Promise from 'bluebird'
-import ping from './../middleware/ping'
-import redirectToHttps from './../middleware/redirect_to_https'
-import states from '../routes/states'
-import toggles from '../routes/toggles'
-import xHeaders from './../middleware/x_headers'
+const authToken = require('./../middleware/auth_token')
+const bodyParser = require('body-parser')
+const config = require('./../config')
+const cookieParser = require('cookie-parser')
+const cors = require('cors')
+const diehard = require('diehard')
+const express = require('express')
+const home = require('../routes/home')
+const Promise = require('bluebird')
+const ping = require('./../middleware/ping')
+const redirectToHttps = require('./../middleware/redirect_to_https')
+const states = require('../routes/states')
+const toggles = require('../routes/toggles')
+const xHeaders = require('./../middleware/x_headers')
 
 const app = express()
 
-export default {
+module.exports = {
   initialize () {
     return new Promise(resolve => {
       app.use('/ping', ping)
       app.use(home)
-      app.use(Cors({
+      app.use(cors({
         origin: config.uiUrl,
         credentials: true,
         exposedHeaders: ['X-Total-Count'],

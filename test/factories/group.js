@@ -1,10 +1,10 @@
-import Bookshelf from '../../src/db/bookshelf'
+const Bookshelf = require('../../src/db/bookshelf')
 
 const Model = Bookshelf.Model.extend({
   tableName: 'public.groups'
 })
 
-export default (factory) => {
+module.exports = (factory) => {
   factory.define('group', Model, {
     name: factory.chance.name(),
     emails: [factory.chance.email()],

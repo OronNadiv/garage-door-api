@@ -1,5 +1,5 @@
-import Model from '../../src/db/models/state'
+const Model = require('../../src/db/models/state')
 
-export default (factory) => {
+module.exports = (factory) => {
   factory.define('state', Model, {})
 }

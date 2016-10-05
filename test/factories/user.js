@@ -1,6 +1,6 @@
-import Model from '../../src/db/models/user'
+const Model = require('../../src/db/models/user')
 
-export default (factory) => {
+module.exports = (factory) => {
   factory.define('user', Model, {
     name: factory.chance.word(),
     is_active: factory.chance.bool(),

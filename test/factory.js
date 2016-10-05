@@ -1,13 +1,13 @@
-import Promise from 'bluebird'
-import BookshelfAdapter from 'factory-girl-bookshelf'
-import Chance from 'chance'
-import group from './factories/group'
-import login from './factories/login'
-import state from './factories/state'
-import toggle from './factories/toggle'
-import user from './factories/user'
-import {Factory} from 'factory-girl'
-import 'should'
+const Promise = require('bluebird')
+const BookshelfAdapter = require('factory-girl-bookshelf')
+const Chance = require('chance')
+const group = require('./factories/group')
+const login = require('./factories/login')
+const state = require('./factories/state')
+const toggle = require('./factories/toggle')
+const user = require('./factories/user')
+const Factory = require('factory-girl').Factory
+require('should')
 
 const chance = new Chance()
 
@@ -37,5 +37,5 @@ group(factory)
 login(factory)
 user(factory)
 
-export default factory.promisify(Promise)
+module.exports = factory.promisify(Promise)
 

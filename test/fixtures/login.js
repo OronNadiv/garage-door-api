@@ -1,5 +1,5 @@
-import factory from '../factory'
-import Promise from 'bluebird'
+const factory = require('../factory')
+const Promise = require('bluebird')
 
 class Group {
   create () {
@@ -15,4 +15,4 @@ class Group {
   }
 }
 
-export default Group
+module.exports = Group

@@ -1,12 +1,12 @@
-import config from '../../src/config'
-import factory from '../factory'
-import fs from 'fs'
-import GroupFixture from './group'
-import jwt from 'jsonwebtoken'
-import LoginFixture from './login'
-import Request from '../routes/request'
-import path from 'path'
-import Promise from 'bluebird'
+const config = require('../../src/config')
+const factory = require('../factory')
+const fs = require('fs')
+const GroupFixture = require('./group')
+const jwt = require('jsonwebtoken')
+const LoginFixture = require('./login')
+const Request = require('../routes/request')
+const path = require('path')
+const Promise = require('bluebird')
 
 const groupFixture = new GroupFixture()
 const loginFixture = new LoginFixture()
@@ -54,4 +54,4 @@ class User {
   }
 }
 
-export default User
+module.exports = User

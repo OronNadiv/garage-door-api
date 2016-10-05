@@ -1,33 +1,36 @@
-import _ from 'underscore'
-import Promise from 'bluebird'
-import Bookshelf from '../bookshelf'
-import config from '../../config'
-import Toggle from '../models/toggle'
+const Bookshelf = require('../bookshelf')
+const config = require('../../config')
+const Promise = require('bluebird')
+const Toggle = require('../models/toggle')
 
-export default _.extend(Bookshelf.Collection.extend({
+const toggles = Bookshelf.Collection.extend({
   tableName: 'toggles',
   model: Toggle
-}),
-  {
-    purge () {
-      const second = 1000
-      const minute = second * 60
-      const hour = minute * 60
-      const day = hour * 24
+})
 
-      setInterval(() => {
-        Promise
-          .try(() => {
-            return exports['default'].forge().query(qb => {
-              const d = new Date()
-              d.setDate(d.getDate() - config.keepHistoryInDays)
-              qb.where('created_at', '<', d)
-            }).fetch()
-          })
-          .get('models')
-          .map(model => {
-            return model.destroy()
-          })
-      }, day)
-    }
-  })
+toggles.purge = () => {
+  const second = 1000
+  const minute = second * 60
+  const hour = minute * 60
+  const day = hour * 24
+
+  Promise
+    .resolve(toggles
+      .forge()
+      .query((qb) => {
+        const d = new Date()
+        d.setDate(d.getDate() - config.keepHistoryInDays)
+        qb.where('created_at', '<', d)
+      }).fetch()
+    )
+    .get('models')
+    .map((model) => {
+      return model.destroy()
+    })
+    .delay(day)
+    .then(() => {
+      return toggles.purge()
+    })
+}
+
+module.exports = toggles

@@ -1,7 +1,7 @@
-import config from '../config'
-import path from 'path'
+const config = require('../config')
+const path = require('path')
 
-export default {
+module.exports = {
   // debug: true,
   client: 'pg',
   connection: config.postgres,

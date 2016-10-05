@@ -1,8 +1,8 @@
-import UserFixture from '../../fixtures/user'
-import Promise from 'bluebird'
-import State from '../../../src/db/models/state'
-import should from 'should'
-import Toggle from '../../../src/db/models/toggle'
+const UserFixture = require('../../fixtures/user')
+const Promise = require('bluebird')
+const State = require('../../../src/db/models/state')
+const should = require('should')
+const Toggle = require('../../../src/db/models/toggle')
 
 const userFixture = new UserFixture()
 

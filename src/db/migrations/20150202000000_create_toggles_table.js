@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   up (knex) {
     return knex.schema.createTable('toggles', table => {
       table.increments('id').primary()

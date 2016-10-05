@@ -1,13 +1,13 @@
 const verbose = require('debug')('ha:db:models:toggle:verbose')
 
-import {createClient} from 'redis'
-import Bookshelf from '../bookshelf'
-import config from '../../config'
-import emitter from 'socket.io-emitter'
-import Promise from 'bluebird'
-import util from 'util'
+const Bookshelf = require('../bookshelf')
+const config = require('../../config')
+const createClient = require('redis').createClient
+const emitter = require('socket.io-emitter')
+const Promise = require('bluebird')
+const util = require('util')
 
-export default Bookshelf.Model.extend({
+module.exports = Bookshelf.Model.extend({
   tableName: 'toggles',
   hasTimestamps: true,
   initialize () {

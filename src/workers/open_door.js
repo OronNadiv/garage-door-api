@@ -2,11 +2,11 @@ const verbose = require('debug')('ha:workers:open_door:verbose')
 const info = require('debug')('ha:workers:open_door:info')
 const error = require('debug')('ha:workers:open_door:error')
 
-import Amqp from 'amqplib-easy'
-import config from '../config'
-import moment from 'moment'
-import Promise from 'bluebird'
-import State from '../db/models/state'
+const Amqp = require('amqplib-easy')
+const config = require('../config')
+const moment = require('moment')
+const Promise = require('bluebird')
+const State = require('../db/models/state')
 
 const amqp = Amqp(config.amqp.url)
 

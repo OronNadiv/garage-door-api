@@ -1,11 +1,11 @@
 const verbose = require('debug')('ha:routes:states:verbose')
 const info = require('debug')('ha:routes:states:info')
 
-import {Router} from 'express'
-import _ from 'underscore'
-import Promise from 'bluebird'
-import State from '../db/models/state'
-import States from '../db/collections/states'
+const _ = require('underscore')
+const Promise = require('bluebird')
+const Router = require('express').Router
+const State = require('../db/models/state')
+const States = require('../db/collections/states')
 
 const router = new Router()
 
@@ -61,4 +61,4 @@ router.get('/states', (req, res, next) => {
     .catch(next)
 })
 
-export default router
+module.exports = router

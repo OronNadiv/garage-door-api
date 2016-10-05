@@ -1,4 +1,4 @@
-import Bookshelf from '../../src/db/bookshelf'
+const Bookshelf = require('../../src/db/bookshelf')
 
 const Model = Bookshelf.Model.extend({
   tableName: 'public.logins',
@@ -18,7 +18,7 @@ const Model = Bookshelf.Model.extend({
   }
 })
 
-export default (factory) => {
+module.exports = (factory) => {
   factory.define('login', Model, {
     email: factory.chance.email(),
     password: factory.chance.word()

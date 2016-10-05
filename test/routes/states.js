@@ -1,8 +1,8 @@
-import factory from '../factory'
-import Promise from 'bluebird'
-import Request from './request'
-import should from 'should'
-import UserFixture from '../fixtures/user'
+const factory = require('../factory')
+const Promise = require('bluebird')
+const Request = require('./request')
+const should = require('should')
+const UserFixture = require('../fixtures/user')
 
 const userFixture = new UserFixture()
 let context

@@ -1,5 +1,5 @@
-import path from 'path'
-import postgres from './postgres'
+const path = require('path')
+const postgres = require('./postgres')
 
 const configuration = {
   client: 'postgresql',
@@ -22,7 +22,7 @@ const configuration = {
   }
 }
 
-export default {
+module.exports = {
   development: configuration,
   test: configuration,
   production: configuration

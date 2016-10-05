@@ -1,9 +1,9 @@
 const verbose = require('debug')('ha:db:bookshelf:verbose')
 
-import bookshelf from 'bookshelf'
-import diehard from 'diehard'
-import knex from 'knex'
-import knexConfiguration from './knex'
+const bookshelf = require('bookshelf')
+const diehard = require('diehard')
+const knex = require('knex')
+const knexConfiguration = require('./knex')
 
 const repository = bookshelf(knex(knexConfiguration))
 
@@ -17,4 +17,4 @@ diehard.register(done => {
   })
 })
 
-export default repository
+module.exports = repository

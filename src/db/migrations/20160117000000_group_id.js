@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   up (knex, Promise) {
     return knex.transaction(trx => {
       return Promise

@@ -1,8 +1,8 @@
 const error = require('debug')('ha:config:error')
 
-import fs from 'fs'
-import knexPgCustomSchema from 'knex-pg-customschema'
-import path from 'path'
+const fs = require('fs')
+const knexPgCustomSchema = require('knex-pg-customschema')
+const path = require('path')
 
 const config = {production: process.env.NODE_ENV && process.env.NODE_ENV.toUpperCase() === 'PRODUCTION'}
 
@@ -84,4 +84,4 @@ if (!config.uiUrl) {
   process.exit(1)
 }
 
-export default config
+module.exports = config

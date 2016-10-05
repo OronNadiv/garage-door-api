@@ -1,13 +1,13 @@
 const error = require('debug')('ha:app:error')
 
-import domain from 'domain'
-import diehard from 'diehard'
-import Promise from 'bluebird'
-import States from './db/collections/states'
-import State from './db/models/state'
-import Toggles from './db/collections/toggles'
-import expressInitializer from './initializations/express'
-import './workers/open_door'
+const domain = require('domain')
+const diehard = require('diehard')
+const Promise = require('bluebird')
+const States = require('./db/collections/states')
+const State = require('./db/models/state')
+const Toggles = require('./db/collections/toggles')
+const expressInitializer = require('./initializations/express')
+require('./workers/open_door')
 
 const d = domain.create()
 
