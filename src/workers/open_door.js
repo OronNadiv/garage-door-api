@@ -11,7 +11,8 @@ const State = require('../db/models/state')
 const amqp = Amqp(config.amqp.url)
 
 amqp.consume({
-  queue: config.amqp.queue
+  queue: config.amqp.queue,
+  exchange: 'ha'
 }, data => {
   verbose('consume called.  data:', !!data)
   const state = data.json
