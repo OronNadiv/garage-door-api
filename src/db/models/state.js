@@ -158,7 +158,8 @@ const state = Bookshelf.Model.extend({
           'x-dead-letter-exchange': 'amqplib-retry',
           'x-dead-letter-routing-key': 'ready'
         }
-      }
+      },
+      exchange: 'ha'
     }, this.toJSON(), properties)
   },
   sendOpenDoorAlert () {
