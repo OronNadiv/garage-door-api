@@ -38,4 +38,3 @@ login(factory)
 user(factory)
 
 module.exports = factory.promisify(Promise)
-
