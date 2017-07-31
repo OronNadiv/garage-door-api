@@ -5,7 +5,6 @@ const _ = require('underscore')
 const Promise = require('bluebird')
 const Router = require('express').Router
 const State = require('../db/models/state')
-const States = require('../db/collections/states')
 
 const router = new Router()
 
@@ -36,28 +35,6 @@ router.post('/states', (req, res, next) => {
     .then(() => {
       res.sendStatus(201)
     })
-    .catch(next)
-})
-
-// get recent states
-router.get('/states', (req, res, next) => {
-  const count = parseInt(req.query.count || 20, 10)
-  const options = {by: req.client}
-  Promise
-    .try(() => {
-      return new States().query(qb => {
-        qb.orderBy('created_at', 'DESC')
-        qb.limit(count)
-      }).fetch(_.extend({withRelated: ['requestedBy']}, options))
-    })
-    .call('toJSON')
-    .then(collection => {
-      if (!req.client.is_trusted) {
-        collection = collection.length ? [_.pick(collection[0], 'is_open')] : []
-      }
-      return collection
-    })
-    .then(res.json.bind(res))
     .catch(next)
 })
 

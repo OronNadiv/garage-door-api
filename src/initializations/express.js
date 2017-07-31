@@ -1,5 +1,6 @@
 const verbose = require('debug')('ha:initializations:express:verbose')
 const info = require('debug')('ha:initializations:express:info')
+const warn = require('debug')('ha:initializations:express:warn')
 const error = require('debug')('ha:initializations:express:error')
 
 const authToken = require('./../middleware/auth_token')
@@ -14,7 +15,7 @@ const Promise = require('bluebird')
 const ping = require('./../middleware/ping')
 const redirectToHttps = require('./../middleware/redirect_to_https')
 const states = require('../routes/states')
-const toggles = require('../routes/toggles')
+const graphql = require('../routes/graphql')
 const xHeaders = require('./../middleware/x_headers')
 
 const app = express()
@@ -37,13 +38,13 @@ module.exports = {
       app.use(xHeaders)
       app.use(authToken)
 
+      app.use(graphql)
       app.use(states)
-      app.use(toggles)
 
       app.use((err, req, res) => {
         if (!(err instanceof Error)) {
           // req is actually res.
-          error('unknown request.  See logs for more details.')
+          warn('unknown request.  See logs for more details.')
           return req.sendStatus(404)
         }
         error('sending Error.  Err: ', err)
