@@ -2,10 +2,12 @@ const verbose = require('debug')('ha:db:models:toggle:verbose')
 
 const Bookshelf = require('../bookshelf')
 const config = require('../../config')
-const createClient = require('redis').createClient
-const emitter = require('socket.io-emitter')
 const Promise = require('bluebird')
 const util = require('util')
+
+const md5 = require('md5')
+const PubNub = require('pubnub')
+const { publishKey, subscribeKey } = config.pubNub
 
 module.exports = Bookshelf.Model.extend({
   tableName: 'toggles',
@@ -16,22 +18,50 @@ module.exports = Bookshelf.Model.extend({
     })
 
     this.on('created', (models, attrs, options) => {
-      let client = createClient(config.redisUrl)
-
       return Promise
         .try(() => {
           verbose('sending message to client. group_id:', options.by.group_id)
-
-          const io = emitter(client)
           const msg = util.format('On %s, %s asked to open/close the garage door.', new Date(), options.by.name)
 
-          io.of(`/${options.by.group_id}`).to('garage-doors').emit('TOGGLE_CREATED', msg)
-        })
-        .finally(() => {
-          if (client) {
-            client.quit()
-            client = null
+          const authKey = md5(options.by.token)
+          const publisher = new PubNub({
+            publishKey,
+            subscribeKey,
+            authKey,
+            ssl: true
+          })
+
+          const publishMessage = (channel, payload) => {
+            return new Promise((resolve, reject) => {
+              const publishConfig = {
+                message: {
+                  system: 'GARAGE',
+                  type: 'TOGGLE_CREATED',
+                  payload
+                },
+                channel
+              }
+              publisher.publish(publishConfig, (status) => {
+                switch (status.statusCode) {
+                  case 200:
+                    info('Publish complete successfully.',
+                      'Hashed authKey:', md5(authKey))
+                    return resolve()
+                  default:
+                    error('Publish failed.',
+                      'Hashed authKey:', md5(authKey),
+                      'status:', status)
+                    reject(status)
+                }
+              })
+
+            })
           }
+
+          return Promise.all([
+            publishMessage(`${options.by.group_id}`, msg),
+            publishMessage(`${options.by.group_id}-trusted`, msg)
+          ])
         })
     })
 

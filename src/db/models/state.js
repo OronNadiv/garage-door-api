@@ -5,8 +5,6 @@ const _ = require('underscore')
 const Amqp = require('amqplib-easy')
 const Bookshelf = require('../bookshelf')
 const config = require('../../config')
-const createClient = require('redis').createClient
-const emitter = require('socket.io-emitter')
 const JWTGenerator = require('jwt-generator')
 const moment = require('moment')
 const Promise = require('bluebird')
@@ -17,6 +15,10 @@ const User = require('./user')
 
 const amqp = Amqp(config.amqp.url)
 const jwtGenerator = new JWTGenerator(config.loginUrl, config.privateKey, false, 'urn:home-automation/garage')
+
+const md5 = require('md5')
+const PubNub = require('pubnub')
+const { publishKey, subscribeKey } = config.pubNub
 
 const state = Bookshelf.Model.extend({
   tableName: 'states',
@@ -61,35 +63,57 @@ const state = Bookshelf.Model.extend({
     })
 
     this.on('created', (model, attrs, options) => {
-      let client
       return Promise
         .resolve(model.get('requested_by_id') && (!model.related('requestedBy') || !model.related('requestedBy').id) ? model.load(['requestedBy'], options) : Promise.resolve())
         .then(() => {
-          client = createClient(config.redisUrl)
+          verbose('sending message to client.',
+            'group_id:', options.by.group_id)
 
-          return Promise
-            .try(() => {
-              verbose('sending message to client. group_id:', options.by.group_id)
+          const authKey = md5(options.by.token)
+          const publisher = new PubNub({
+            publishKey,
+            subscribeKey,
+            authKey,
+            ssl: true
+          })
 
-              const io = emitter(client)
-              io.of(`/${options.by.group_id}-trusted`).to('garage-doors').emit('STATE_CREATED', model.toJSON())
-              io.of(`/${options.by.group_id}`).to('garage-doors').emit('STATE_CREATED', _.pick(model.toJSON(), 'is_open'))
-            })
-            .finally(() => {
-              if (client) {
-                client.quit()
-                client = null
+          const publishMessage = (channel, payload) => {
+            return new Promise((resolve, reject) => {
+              const publishConfig = {
+                message: {
+                  system: 'GARAGE',
+                  type: 'STATE_CREATED',
+                  payload
+                },
+                channel
               }
+              publisher.publish(publishConfig, (status) => {
+                switch (status.statusCode) {
+                  case 200:
+                    info('Publish complete successfully.',
+                      'Hashed authKey:', md5(authKey))
+                    return resolve()
+                  default:
+                    error('Publish failed.',
+                      'Hashed authKey:', md5(authKey),
+                      'status:', status)
+                    reject(status)
+                }
+              })
             })
+          }
+
+          return Promise.all([
+            publishMessage(`${options.by.group_id}`, _.pick(model.toJSON(), 'is_open')),
+            publishMessage(`${options.by.group_id}-trusted`, model.toJSON())
+          ])
         })
     })
 
     this.on('created', (model, attrs, options) => {
-      verbose(
-        'created event.  config.alarmUrl:',
-        config.alarmUrl,
-        'model.get(\'is_open\')',
-        model.get('is_open')
+      verbose('created event.',
+        'config.alarmUrl:', config.alarmUrl,
+        'model.get(\'is_open\'):', model.get('is_open')
       )
 
       if (!config.alarmUrl) {
@@ -103,10 +127,10 @@ const state = Bookshelf.Model.extend({
         .resolve(jwtGenerator.makeToken('Garage door state has changed.', 'urn:home-automation/*', options.by))
         .then((token) => {
           verbose(
-            'Garage door state has changed.  New state:',
-            model.get('is_open'),
-            'notifying alarm server.  token:',
-            !!token
+            'Garage door state has changed.',
+            'New state:', model.get('is_open'),
+            'notifying alarm server.',
+            'token:', !!token
           )
 
           return request({
@@ -115,7 +139,7 @@ const state = Bookshelf.Model.extend({
             auth: {
               bearer: token
             },
-            form: {sensor_name: 'Garage Door'}
+            form: { sensor_name: 'Garage Door' }
           })
         })
         .catch((err) => {
@@ -213,7 +237,7 @@ const state = Bookshelf.Model.extend({
 state.fetchLatest = (options) => {
   return state.forge()
     .query((qb) => {
-      qb.where({group_id: options.by.group_id})
+      qb.where({ group_id: options.by.group_id })
       qb.orderBy('created_at', 'DESC')
     })
     .fetch(options)
@@ -223,7 +247,7 @@ state.fetchCurrentlyOpen = (options) => {
   return state.forge()
     .query((qb) => {
       qb.whereRaw('id in (select max(id) from garage.states group by group_id)')
-      qb.where({is_open: true})
+      qb.where({ is_open: true })
     })
     .fetchAll(options)
 }

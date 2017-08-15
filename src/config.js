@@ -68,6 +68,25 @@ config.postgresPool = {
   afterCreate: knexPgCustomSchema('garage')
 }
 
+config.pubNub = {
+  publishKey: process.env.PUBNUB_PUBLISH_KEY,
+  subscribeKey: process.env.PUBNUB_SUBSCRIBE_KEY
+}
+
+if (!config.pubNub.publishKey) {
+  error(
+    'PubNub publish key could not be found in the environment variable.  Please set \'PUBNUB_PUBLISH_KEY\'.'
+  )
+  process.exit(1)
+}
+
+if (!config.pubNub.subscribeKey) {
+  error(
+    'PubNub subscribe key could not be found in the environment variable.  Please set \'PUBNUB_SUBSCRIBE_KEY\'.'
+  )
+  process.exit(1)
+}
+
 config.redisUrl = process.env.REDIS_URL || process.env.REDISCLOUD_URL || (config.production ? null : 'redis://localhost:6379')
 if (!config.redisUrl) {
   error(
