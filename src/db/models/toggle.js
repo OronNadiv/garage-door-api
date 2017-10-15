@@ -24,7 +24,8 @@ module.exports = Bookshelf.Model.extend({
           system: 'GARAGE',
           type: 'TOGGLE_CREATED',
           payload: msg,
-          token: options.by.token
+          token: options.by.token,
+          uuid: 'garage-door-api'
         }),
         publish({
           groupId: options.by.group_id,
@@ -32,7 +33,8 @@ module.exports = Bookshelf.Model.extend({
           system: 'GARAGE',
           type: 'TOGGLE_CREATED',
           payload: msg,
-          token: options.by.token
+          token: options.by.token,
+          uuid: 'garage-door-api'
         })
       ])
     })

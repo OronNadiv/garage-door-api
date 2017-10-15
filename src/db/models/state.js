@@ -72,7 +72,8 @@ const state = Bookshelf.Model.extend({
               system: 'GARAGE',
               type: 'STATE_CREATED',
               payload: model.toJSON(),
-              token: options.by.token
+              token: options.by.token,
+              uuid: 'garage-door-api'
             }),
             publish({
               groupId: options.by.group_id,
@@ -80,7 +81,8 @@ const state = Bookshelf.Model.extend({
               system: 'GARAGE',
               type: 'STATE_CREATED',
               payload: _.pick(model.toJSON(), 'is_open'),
-              token: options.by.token
+              token: options.by.token,
+              uuid: 'garage-door-api'
             })
           ])
         })
