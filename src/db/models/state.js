@@ -5,8 +5,6 @@ const _ = require('underscore')
 const Amqp = require('amqplib-easy')
 const Bookshelf = require('../bookshelf')
 const config = require('../../config')
-const createClient = require('redis').createClient
-const emitter = require('socket.io-emitter')
 const JWTGenerator = require('jwt-generator')
 const moment = require('moment')
 const Promise = require('bluebird')
@@ -14,6 +12,7 @@ const request = require('http-as-promised')
 const Toggle = require('./toggle')
 const url = require('url')
 const User = require('./user')
+const {publish} = require('home-automation-pubnub').Publisher
 
 const amqp = Amqp(config.amqp.url)
 const jwtGenerator = new JWTGenerator(config.loginUrl, config.privateKey, false, 'urn:home-automation/garage')
@@ -61,26 +60,29 @@ const state = Bookshelf.Model.extend({
     })
 
     this.on('created', (model, attrs, options) => {
-      let client
       return Promise
         .resolve(model.get('requested_by_id') && (!model.related('requestedBy') || !model.related('requestedBy').id) ? model.load(['requestedBy'], options) : Promise.resolve())
         .then(() => {
-          client = createClient(config.redisUrl)
+          verbose('sending message to client. group_id:', options.by.group_id)
 
-          return Promise
-            .try(() => {
-              verbose('sending message to client. group_id:', options.by.group_id)
-
-              const io = emitter(client)
-              io.of(`/${options.by.group_id}-trusted`).to('garage-doors').emit('STATE_CREATED', model.toJSON())
-              io.of(`/${options.by.group_id}`).to('garage-doors').emit('STATE_CREATED', _.pick(model.toJSON(), 'is_open'))
+          return Promise.all([
+            publish({
+              groupId: options.by.group_id,
+              isTrusted: true,
+              system: 'GARAGE',
+              type: 'STATE_CREATED',
+              payload: model.toJSON(),
+              token: options.by.token
+            }),
+            publish({
+              groupId: options.by.group_id,
+              isTrusted: false,
+              system: 'GARAGE',
+              type: 'STATE_CREATED',
+              payload: _.pick(model.toJSON(), 'is_open'),
+              token: options.by.token
             })
-            .finally(() => {
-              if (client) {
-                client.quit()
-                client = null
-              }
-            })
+          ])
         })
     })
 

@@ -67,14 +67,6 @@ config.postgresPool = {
   afterCreate: (connection, cb) => connection.query(`SET SESSION SCHEMA 'garage';`, cb)
 }
 
-config.redisUrl = process.env.REDIS_URL || process.env.REDISCLOUD_URL || (config.production ? null : 'redis://localhost:6379')
-if (!config.redisUrl) {
-  error(
-    'Redis URL could not be found in the environment variable.  Please set \'REDIS_URL\'.'
-  )
-  process.exit(1)
-}
-
 config.skipSSL = process.env.SKIP_SSL && process.env.SKIP_SSL.toUpperCase() === 'TRUE'
 
 config.uiUrl = process.env.UI_URL || (config.production ? null : 'http://localhost:3000')

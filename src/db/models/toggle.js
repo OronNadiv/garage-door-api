@@ -1,11 +1,9 @@
 const verbose = require('debug')('ha:db:models:toggle:verbose')
 
 const Bookshelf = require('../bookshelf')
-const config = require('../../config')
-const createClient = require('redis').createClient
-const emitter = require('socket.io-emitter')
-const Promise = require('bluebird')
 const util = require('util')
+const {publish} = require('home-automation-pubnub').Publisher
+const Promise = require('bluebird')
 
 module.exports = Bookshelf.Model.extend({
   tableName: 'toggles',
@@ -16,23 +14,27 @@ module.exports = Bookshelf.Model.extend({
     })
 
     this.on('created', (models, attrs, options) => {
-      let client = createClient(config.redisUrl)
+      verbose('sending message to client. group_id:', options.by.group_id)
+      const msg = util.format('On %s, %s asked to open/close the garage door.', new Date(), options.by.name)
 
-      return Promise
-        .try(() => {
-          verbose('sending message to client. group_id:', options.by.group_id)
-
-          const io = emitter(client)
-          const msg = util.format('On %s, %s asked to open/close the garage door.', new Date(), options.by.name)
-
-          io.of(`/${options.by.group_id}`).to('garage-doors').emit('TOGGLE_CREATED', msg)
+      return Promise.all([
+        publish({
+          groupId: options.by.group_id,
+          isTrusted: true,
+          system: 'GARAGE',
+          type: 'TOGGLE_CREATED',
+          payload: msg,
+          token: options.by.token
+        }),
+        publish({
+          groupId: options.by.group_id,
+          isTrusted: false,
+          system: 'GARAGE',
+          type: 'TOGGLE_CREATED',
+          payload: msg,
+          token: options.by.token
         })
-        .finally(() => {
-          if (client) {
-            client.quit()
-            client = null
-          }
-        })
+      ])
     })
 
     this.on('updating', () => {
