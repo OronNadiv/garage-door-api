@@ -5,7 +5,6 @@ const _ = require('underscore')
 const Amqp = require('amqplib-easy')
 const Bookshelf = require('../bookshelf')
 const config = require('../../config')
-const JWTGenerator = require('jwt-generator')
 const moment = require('moment')
 const Promise = require('bluebird')
 const request = require('http-as-promised')
@@ -13,14 +12,14 @@ const Toggle = require('./toggle')
 const url = require('url')
 const User = require('./user')
 const {publish} = require('home-automation-pubnub').Publisher
-
-const amqp = Amqp(config.amqp.url)
+const JWTGenerator = require('jwt-generator')
 const jwtGenerator = new JWTGenerator({
   loginUrl: config.loginUrl,
   privateKey: config.privateKey,
   useRetry: false,
   issuer: 'urn:home-automation/garage'
 })
+const amqp = Amqp(config.amqp.url)
 
 const uuid = 'garage-door-api'
 const state = Bookshelf.Model.extend({
