@@ -65,12 +65,15 @@ const state = Bookshelf.Model.extend({
     })
 
     this.on('created', (model, attrs, options) => {
+      const {id, group_id} = options.by
+      verbose('created event.', 'id:', id, 'group_id:', group_id)
+
       return Promise
         .all([
           jwtGenerator.makeToken({
-            subject: `Alarm toggle created for group ${options.by.group_id}`,
-            audience: 'urn:home-automation/alarm',
-            payload: options.by
+            subject: `Garage door stage changed. ${options.by.group_id}`,
+            audience: 'urn:home-automation/*',
+            payload: {id, group_id}
           }),
           model.get('requested_by_id') && (!model.related('requestedBy') || !model.related('requestedBy').id) ? model.load(['requestedBy'], options) : Promise.resolve()
         ])

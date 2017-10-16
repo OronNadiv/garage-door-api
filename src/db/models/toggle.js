@@ -26,18 +26,19 @@ module.exports = Bookshelf.Model.extend({
       verbose('sending message to client. group_id:', options.by.group_id)
       const msg = util.format('On %s, %s asked to open/close the garage door.', new Date(), options.by.name)
 
+      const {id, group_id} = options.by
       return Promise
         .resolve(
           jwtGenerator.makeToken({
-            subject: `Alarm toggle created for group ${options.by.group_id}`,
-            audience: 'urn:home-automation/alarm',
-            payload: options.by
+            subject: `User garage toggle request. userId: ${options.by.id}, groupId: ${options.by.group_id}`,
+            audience: 'urn:home-automation/garage',
+            payload: {id, group_id}
           })
         )
         .then((token) => {
           return Promise.all([
             publish({
-              groupId: options.by.group_id,
+              groupId: group_id,
               isTrusted: true,
               system: 'GARAGE',
               type: 'TOGGLE_CREATED',
@@ -46,7 +47,7 @@ module.exports = Bookshelf.Model.extend({
               uuid
             }),
             publish({
-              groupId: options.by.group_id,
+              groupId: group_id,
               isTrusted: false,
               system: 'GARAGE',
               type: 'TOGGLE_CREATED',
