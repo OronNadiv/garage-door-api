@@ -119,7 +119,11 @@ const state = Bookshelf.Model.extend({
       // execute asynchronously.
       Promise
       // 'urn:home-automation/*' because we use the same token for 'alarm' and for 'notifications
-        .resolve(jwtGenerator.makeToken('Garage door state has changed.', 'urn:home-automation/*', options.by))
+        .resolve(jwtGenerator.makeToken({
+          subject: 'Garage door state has changed.',
+          audience: 'urn:home-automation/*',
+          payload: options.by
+        }))
         .then((token) => {
           verbose(
             'Garage door state has changed.  New state:',
@@ -187,7 +191,7 @@ const state = Bookshelf.Model.extend({
     const text = `Your garage door has been open for the last ${minutes} minutes.`
 
     return Promise
-      .resolve(jwtGenerator.makeToken(subject, 'urn:home-automation/notifications', this.toJSON()))
+      .resolve(jwtGenerator.makeToken({subject, audience: 'urn:home-automation/notifications', payload: this.toJSON()}))
       .then((token) => {
         const sendEmail = request({
           url: url.resolve(config.notificationsUrl, 'emails'),
