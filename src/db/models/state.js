@@ -15,8 +15,14 @@ const User = require('./user')
 const {publish} = require('home-automation-pubnub').Publisher
 
 const amqp = Amqp(config.amqp.url)
-const jwtGenerator = new JWTGenerator(config.loginUrl, config.privateKey, false, 'urn:home-automation/garage')
+const jwtGenerator = new JWTGenerator({
+  loginUrl: config.loginUrl,
+  privateKey: config.privateKey,
+  useRetry: false,
+  issuer: 'urn:home-automation/garage'
+})
 
+const uuid = 'garage-door-api'
 const state = Bookshelf.Model.extend({
   tableName: 'states',
   hasTimestamps: true,
@@ -61,8 +67,15 @@ const state = Bookshelf.Model.extend({
 
     this.on('created', (model, attrs, options) => {
       return Promise
-        .resolve(model.get('requested_by_id') && (!model.related('requestedBy') || !model.related('requestedBy').id) ? model.load(['requestedBy'], options) : Promise.resolve())
-        .then(() => {
+        .all([
+          jwtGenerator.makeToken({
+            subject: `Alarm toggle created for group ${options.by.group_id}`,
+            audience: 'urn:home-automation/alarm',
+            payload: options.by
+          }),
+          model.get('requested_by_id') && (!model.related('requestedBy') || !model.related('requestedBy').id) ? model.load(['requestedBy'], options) : Promise.resolve()
+        ])
+        .spread((token) => {
           verbose('sending message to client. group_id:', options.by.group_id)
 
           return Promise.all([
@@ -72,8 +85,8 @@ const state = Bookshelf.Model.extend({
               system: 'GARAGE',
               type: 'STATE_CREATED',
               payload: model.toJSON(),
-              token: options.by.token,
-              uuid: 'garage-door-api'
+              token,
+              uuid
             }),
             publish({
               groupId: options.by.group_id,
@@ -81,8 +94,8 @@ const state = Bookshelf.Model.extend({
               system: 'GARAGE',
               type: 'STATE_CREATED',
               payload: _.pick(model.toJSON(), 'is_open'),
-              token: options.by.token,
-              uuid: 'garage-door-api'
+              token,
+              uuid
             })
           ])
         })
