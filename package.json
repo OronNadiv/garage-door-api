@@ -10,8 +10,8 @@
   },
   "license": "AGPL-3.0",
   "engines": {
-    "node": "^6",
-    "npm": "^3"
+    "node": "^8",
+    "npm": "^5"
   },
   "scripts": {
     "cover": "istanbul cover _mocha -- --recursive -t 10000",
@@ -32,10 +32,10 @@
     "debug": "^3.1.0",
     "diehard": "^1.5.2",
     "express": "^4.16.2",
-    "home-automation-pubnub": "^0.4.4",
+    "home-automation-pubnub": "^0.4.5",
     "http-as-promised": "^1.1.0",
     "jsonwebtoken": "^8.1.0",
-    "jwt-generator": "^3.0.0",
+    "jwt-generator": "^3.0.1",
     "knex": "^0.13.0",
     "moment": "^2.19.1",
     "pg": "^7.3.0",
