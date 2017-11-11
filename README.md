@@ -8,8 +8,6 @@ It will notify the [alarm server api][alarm-url] when the door is opening or clo
 [![JavaScript Style Guide][standard-image]][standard-url]
 [![Dependencies][dependencies-image]][dependencies-url]
 [![DevDependencies][dependencies-dev-image]][dependencies-dev-url]
-[![Build Status][travis-image]][travis-url]
-[![Test Coverage][coveralls-image]][coveralls-url]
 
 I suggest you first [read][overview-url] about the different components of the home automation application.  
 This will help you understand better the general architecture and different functions of the system.
