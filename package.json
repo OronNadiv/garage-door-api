@@ -26,7 +26,7 @@
     "amqplib-easy": "^5.0.0",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
-    "bookshelf": "^0.10.4",
+    "bookshelf": "^0.12.1",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.4",
     "debug": "^3.1.0",
@@ -36,7 +36,7 @@
     "http-as-promised": "^1.1.0",
     "jsonwebtoken": "^8.1.0",
     "jwt-generator": "^3.0.2",
-    "knex": "^0.13.0",
+    "knex": "^0.14.2",
     "moment": "^2.20.1",
     "pg": "^7.4.1",
     "underscore": "^1.8.3"
