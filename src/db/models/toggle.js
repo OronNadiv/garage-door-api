@@ -26,7 +26,7 @@ module.exports = Bookshelf.Model.extend({
       verbose('sending message to client. group_id:', options.by.group_id)
       const msg = util.format('On %s, %s asked to open/close the garage door.', new Date(), options.by.name)
 
-      const {id, group_id} = options.by
+      const {id, group_id} = options.by // eslint-disable-line camelcase
       return Promise
         .resolve(
           jwtGenerator.makeToken({

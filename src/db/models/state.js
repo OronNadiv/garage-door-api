@@ -65,7 +65,7 @@ const state = Bookshelf.Model.extend({
     })
 
     this.on('created', (model, attrs, options) => {
-      const {id, group_id} = options.by
+      const {id, group_id} = options.by // eslint-disable-line camelcase
       verbose('created event.', 'id:', id, 'group_id:', group_id)
 
       return Promise
